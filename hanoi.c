@@ -7,7 +7,8 @@
 #define NUMBER_DISKS 3
 
 typedef struct {
-    Stack**towers;
+    PtStack towers[3];
+    int num_disks;
 } HanoiGame;
 
 typedef HanoiGame *PtHanoiGame;
@@ -80,8 +81,44 @@ void hanoiPrint(PtHanoiGame game) {
 }
 
 bool hanoiMakeMove(PtHanoiGame game, int towerFrom, int towerTo) {
-    //TODO...
-    return false;
+    if (towerFrom < 1 || towerFrom > 3 || towerTo < 1 || towerTo > 3) {
+        printf("As torres especificadas estão fora dos limites válidos.\n");
+        return false;
+    }
+    towerFrom--;
+    towerTo--;
+
+    if (stackIsEmpty(game->towers[towerFrom])) {
+        printf("A torre de origem está vazia.\n");
+        return false;
+    }
+
+    Disk top_disk;
+    if (stackPeek(game->towers[towerFrom], &top_disk) != STACK_OK) {
+        printf("Erro ao obter o disco do topo da torre de origem.\n");
+        return false;
+    }
+
+    if (!stackIsEmpty(game->towers[towerTo]) && top_disk.size > stackPeekSize(game->towers[towerTo])) {
+        printf("Um disco não pode ser colocado em cima de um disco menor.\n");
+        return false;
+    }
+
+    if (stackPop(game->towers[towerFrom], NULL) != STACK_OK) {
+        printf("Erro ao remover o disco do topo da torre de origem.\n");
+        return false;
+    }
+
+    if (stackPush(game->towers[towerTo], NULL) != STACK_OK) {
+        printf("Erro ao empilhar o disco na torre de destino.\n");
+       
+        stackPush(game->towers[towerFrom], top_disk);
+        return false;
+    }
+
+    printf("Disco movido da torre %d para a torre %d.\n", towerFrom + 1, towerTo + 1);
+
+    return true;
 }
 
 bool hanoiSolved(HanoiGame game) {
