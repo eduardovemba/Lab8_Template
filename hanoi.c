@@ -60,7 +60,11 @@ HanoiGame hanoiInit() {
 }
 
 void hanoiCleanup(PtHanoiGame game) {
-    //TODO...
+      for (int i = 0; i < 3; i++) {
+        stackDestroy(&(game->towers[i]));
+    }
+    // Liberar a memória alocada para o array de ponteiros de pilhas
+    free(game->towers);
 }
 
 void hanoiPrint(PtHanoiGame game) {
